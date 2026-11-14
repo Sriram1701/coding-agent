@@ -7,8 +7,9 @@ import asyncio
 from datetime import datetime, timezone
 import json
 import logging
+import os
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Any, Dict, List, Optional, Set, Tuple, Union
 import uuid
 
 from shared.constants import (
@@ -21,11 +22,15 @@ logger = logging.getLogger("ai_coding_hub.cloud_task_store")
 
 
 class CloudTaskStore:
-    def __init__(self, storage_path: Optional[Path] = None):
+    def __init__(self, storage_path: Optional[Union[Path, str]] = None):
         if storage_path:
             self.storage_path = Path(storage_path).resolve()
         else:
-            self.storage_path = Path("data/tasks.json").resolve()
+            env_path = os.environ.get("ACH_STORAGE_PATH")
+            if env_path and env_path.strip():
+                self.storage_path = Path(env_path.strip()).resolve()
+            else:
+                self.storage_path = Path("data/tasks.json").resolve()
 
         self._tasks: Dict[str, Dict[str, Any]] = {}
         self._lock = asyncio.Lock()

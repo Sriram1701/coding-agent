@@ -366,3 +366,13 @@ async def websocket_agent_bridge(websocket: WebSocket):
     Requires cryptographic HMAC handshake and nonce replay validation.
     """
     await bridge_manager.handle_connection(websocket)
+
+
+if __name__ == "__main__":
+    import uvicorn
+    port_str = os.environ.get("PORT", "8000")
+    try:
+        port = int(port_str)
+    except ValueError:
+        port = 8000
+    uvicorn.run("cloud_app.server:app", host="0.0.0.0", port=port, reload=False)

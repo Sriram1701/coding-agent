@@ -5,6 +5,7 @@ Verifies offline task queuing, reconnection dispatch, rejection, cancellation, a
 
 import asyncio
 import json
+import os
 from pathlib import Path
 import tempfile
 import unittest
@@ -150,6 +151,66 @@ class TestTaskQueueAndDispatch(unittest.IsolatedAsyncioTestCase):
         cancels = [m for m in ws.outgoing if m.get("type") == BridgeMessageType.TASK_CANCEL]
         self.assertEqual(len(cancels), 1)
         self.assertEqual(cancels[0]["payload"]["task_id"], task_id)
+
+    def test_default_storage_path(self):
+        """Verifies storage_path defaults to data/tasks.json when no env or arg provided."""
+        old_env = os.environ.pop("ACH_STORAGE_PATH", None)
+        try:
+            store = CloudTaskStore()
+            expected_default = Path("data/tasks.json").resolve()
+            self.assertEqual(store.storage_path, expected_default)
+        finally:
+            if old_env is not None:
+                os.environ["ACH_STORAGE_PATH"] = old_env
+
+    async def test_custom_storage_path_from_env(self):
+        """Verifies ACH_STORAGE_PATH environment variable correctly configures storage location."""
+        custom_file = Path(self.temp_dir.name) / "custom_dir" / "custom_tasks.json"
+        old_env = os.environ.get("ACH_STORAGE_PATH")
+        os.environ["ACH_STORAGE_PATH"] = str(custom_file)
+        try:
+            store = CloudTaskStore()
+            self.assertEqual(store.storage_path, custom_file.resolve())
+
+            # Submit task and verify custom file was created
+            task = await store.submit_task(
+                prompt="Task in custom storage",
+                workspace=r"C:\Users\lovel\Desktop\AI-CODING-HUB",
+                user="admin"
+            )
+            self.assertTrue(custom_file.exists())
+            self.assertTrue(custom_file.parent.exists())
+        finally:
+            if old_env is not None:
+                os.environ["ACH_STORAGE_PATH"] = old_env
+            else:
+                os.environ.pop("ACH_STORAGE_PATH", None)
+
+    async def test_task_persistence_after_restart(self):
+        """Verifies tasks and approval states survive a server restart when persisted."""
+        custom_file = Path(self.temp_dir.name) / "restart_test" / "tasks.json"
+
+        # 1. Instance 1 writes task
+        store1 = CloudTaskStore(storage_path=custom_file)
+        task = await store1.submit_task(
+            prompt="Task to survive restart",
+            workspace=r"C:\Users\lovel\Desktop\AI-CODING-HUB",
+            user="admin"
+        )
+        task_id = task["id"]
+        await store1.approve_task(task_id, user="admin")
+        self.assertEqual(store1.get_task(task_id)["status"], TaskStatus.QUEUED)
+
+        # 2. Instance 2 simulates server reboot
+        store2 = CloudTaskStore(storage_path=custom_file)
+        reloaded = store2.get_task(task_id)
+
+        self.assertIsNotNone(reloaded)
+        self.assertEqual(reloaded["id"], task_id)
+        self.assertEqual(reloaded["status"], TaskStatus.QUEUED)
+        self.assertEqual(reloaded["approved_by"], "admin")
+        self.assertIn("Task to survive restart", reloaded["prompt"])
+        self.assertEqual(len(store2.get_dispatchable_tasks()), 1)
 
 
 if __name__ == "__main__":
