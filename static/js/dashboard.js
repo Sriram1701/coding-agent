@@ -6,6 +6,7 @@
 
 document.addEventListener("DOMContentLoaded", () => {
   // State
+  let csrfToken = "";
   const state = {
     currentView: "overview",
     backendStatus: "checking",
@@ -40,6 +41,113 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Activity List
   const activityList = document.getElementById("activityList");
+
+  // Auth & Agent DOM Elements (Phase 2 Cloud Auth)
+  const loginModal = document.getElementById("loginModal");
+  const loginForm = document.getElementById("loginForm");
+  const loginAlert = document.getElementById("loginAlert");
+  const loginUsername = document.getElementById("loginUsername");
+  const loginPassword = document.getElementById("loginPassword");
+  const btnLoginSubmit = document.getElementById("btnLoginSubmit");
+  const authUserPill = document.getElementById("authUserPill");
+  const authUsernameDisplay = document.getElementById("authUsernameDisplay");
+  const btnLogout = document.getElementById("btnLogout");
+  const topAgentStatusText = document.getElementById("topAgentStatusText");
+  const agentPulseDot = document.getElementById("agentPulseDot");
+
+  async function checkAuthSession() {
+    try {
+      const res = await fetch("/api/auth/me");
+      if (res.ok) {
+        const data = await res.json();
+        csrfToken = data.csrf_token;
+        if (loginModal) loginModal.style.display = "none";
+        if (authUserPill) authUserPill.style.display = "flex";
+        if (authUsernameDisplay) authUsernameDisplay.textContent = data.username;
+        loadTasks();
+        fetchAgentStatus();
+      } else {
+        if (loginModal) loginModal.style.display = "flex";
+        if (authUserPill) authUserPill.style.display = "none";
+      }
+    } catch (e) {
+      console.warn("Auth check error:", e);
+      if (loginModal) loginModal.style.display = "flex";
+    }
+  }
+
+  if (loginForm) {
+    loginForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (!loginUsername || !loginPassword) return;
+
+      const u = loginUsername.value.trim();
+      const p = loginPassword.value;
+      if (!u || !p) return;
+
+      if (loginAlert) loginAlert.style.display = "none";
+      if (btnLoginSubmit) {
+        btnLoginSubmit.disabled = true;
+        btnLoginSubmit.textContent = "Authenticating...";
+      }
+
+      try {
+        const res = await fetch("/api/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username: u, password: p })
+        });
+        const data = await res.json();
+
+        if (res.ok) {
+          csrfToken = data.csrf_token;
+          if (loginModal) loginModal.style.display = "none";
+          if (authUserPill) authUserPill.style.display = "flex";
+          if (authUsernameDisplay) authUsernameDisplay.textContent = data.username;
+          showToast(`Welcome back, ${data.username}!`, "success");
+          addActivity(`User <strong>${data.username}</strong> authenticated via Cloud Gateway`, "AUTH", "success");
+          loadTasks();
+          fetchAgentStatus();
+        } else {
+          if (loginAlert) {
+            loginAlert.textContent = data.detail || "Invalid username or password";
+            loginAlert.style.display = "block";
+          }
+        }
+      } catch (err) {
+        if (loginAlert) {
+          loginAlert.textContent = `Network error: ${err.message}`;
+          loginAlert.style.display = "block";
+        }
+      } finally {
+        if (btnLoginSubmit) {
+          btnLoginSubmit.disabled = false;
+          btnLoginSubmit.textContent = "Sign In to Dashboard";
+        }
+      }
+    });
+  }
+
+  if (btnLogout) {
+    btnLogout.addEventListener("click", async () => {
+      try {
+        await fetch("/api/auth/logout", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRF-Token": csrfToken
+          }
+        });
+      } catch (e) {
+        console.warn("Logout error:", e);
+      } finally {
+        csrfToken = "";
+        if (authUserPill) authUserPill.style.display = "none";
+        if (loginModal) loginModal.style.display = "flex";
+        showToast("Signed out successfully.", "info");
+      }
+    });
+  }
 
   // -------------------------------------------------------------------------
   // Toast Notifications
@@ -523,13 +631,25 @@ document.addEventListener("DOMContentLoaded", () => {
       const res = await fetch("/api/agent/status");
       if (res.ok) {
         const data = await res.json();
+        const isOnline = data.bridge_connected || data.status === "online";
+        if (topAgentStatusText && agentPulseDot) {
+          if (isOnline) {
+            topAgentStatusText.textContent = "AGENT: ONLINE";
+            topAgentStatusText.style.color = "var(--accent-emerald)";
+            agentPulseDot.className = "pulse-dot pulse-dot-online";
+          } else {
+            topAgentStatusText.textContent = "AGENT: OFFLINE";
+            topAgentStatusText.style.color = "var(--text-muted)";
+            agentPulseDot.className = "pulse-dot pulse-dot-offline";
+          }
+        }
         if (agentBridgeStatusBadge) {
-          if (data.cli_exists) {
+          if (isOnline) {
             agentBridgeStatusBadge.className = "status-badge badge-online";
-            agentBridgeStatusBadge.innerHTML = `<span class="pulse-dot"></span> CLI Connected (${data.cli_version})`;
+            agentBridgeStatusBadge.innerHTML = `<span class="pulse-dot pulse-dot-online"></span> Bridge Connected (${data.worker_id || "Active"})`;
           } else {
             agentBridgeStatusBadge.className = "status-badge badge-offline";
-            agentBridgeStatusBadge.innerHTML = `CLI Not Found`;
+            agentBridgeStatusBadge.innerHTML = `Agent Bridge Offline (Standby)`;
           }
         }
       }
@@ -692,11 +812,17 @@ document.addEventListener("DOMContentLoaded", () => {
       showToast(`Authorizing execution for ${taskId}...`, "info");
       addActivity(`Approving task: <code>${taskId}</code>`, "APPROVAL", "warn");
 
-      const res = await fetch(`/api/tasks/${taskId}/approve`, { method: "POST" });
+      const res = await fetch(`/api/tasks/${taskId}/approve`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-Token": csrfToken
+        }
+      });
       const data = await res.json();
 
       if (res.ok) {
-        showToast(`Task ${taskId} approved! ACP session started.`, "success");
+        showToast(`Task ${taskId} approved! Dispatched to local agent.`, "success");
         addActivity(`Task approved and scheduled: <code>${taskId}</code>`, "TASK", "success");
         await loadTasks();
       } else {
@@ -711,7 +837,10 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       const res = await fetch(`/api/tasks/${taskId}/reject`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-Token": csrfToken
+        },
         body: JSON.stringify({ reason: "Rejected via Dashboard approval panel" })
       });
       const data = await res.json();
@@ -733,7 +862,10 @@ document.addEventListener("DOMContentLoaded", () => {
       showToast(`Submitting action decision '${decision}'...`, "info");
       const res = await fetch(`/api/tasks/${taskId}/permission`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-Token": csrfToken
+        },
         body: JSON.stringify({ decision: decision })
       });
       const data = await res.json();
@@ -753,13 +885,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
   window.handleCancelTask = async function(taskId) {
     try {
-      const res = await fetch(`/api/tasks/${taskId}/cancel`, { method: "POST" });
+      const res = await fetch(`/api/tasks/${taskId}/cancel`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-Token": csrfToken
+        }
+      });
       const data = await res.json();
       if (res.ok) {
         showToast(`Task ${taskId} cancelled safely.`, "info");
         addActivity(`Task cancelled: <code>${taskId}</code>`, "TASK", "warn");
         await loadTasks();
       } else {
+        showToast(`Cancel error: ${data.detail || "Error"}`, "error");
+      }
+    } catch (e) {
+      showToast(`Network error: ${e.message}`, "error");
+    }
+  };
         showToast(`Cancel error: ${data.detail || "Error"}`, "error");
       }
     } catch (e) {
@@ -831,7 +975,10 @@ document.addEventListener("DOMContentLoaded", () => {
       try {
         const res = await fetch("/api/tasks", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRF-Token": csrfToken
+          },
           body: JSON.stringify({
             prompt: prompt,
             workspace: "C:\\Users\\lovel\\Desktop\\AI-CODING-HUB"
@@ -857,17 +1004,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Periodic task status polling
   setInterval(() => {
-    loadTasks();
+    if (csrfToken) {
+      loadTasks();
+      fetchAgentStatus();
+    }
   }, 4000);
-
-  // Initial load of agent status and tasks
-  fetchAgentStatus();
-  loadTasks();
 
   // -------------------------------------------------------------------------
   // Initial Boot
   // -------------------------------------------------------------------------
   startHealthPolling();
+  checkAuthSession();
   addActivity("AI CODING HUB Dashboard initialized and mounted at <code>/dashboard</code>", "INIT", "success");
-  addActivity("Connected to local backend: <code>http://127.0.0.1:8000</code>", "INIT", "info");
+  addActivity("Connected to Cloud Gateway: <code>http://127.0.0.1:8000</code>", "INIT", "info");
 });
