@@ -1,0 +1,51 @@
+# Virtual Environments
+.venv/
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Local Runtime Data, Tasks, and Execution History
+data/
+*.sqlite3
+*.db
+
+# Logs and Diagnostics
+logs/
+*.log
+*.log.*
+
+# Environment variables, credentials, and secrets
+.env
+.env.*
+*.key
+*.pem
+*.cert
+*.crt
+credentials
+credentials.json
+secrets.json
+
+# Temporary files and scratch buffers
+tmp/
+temp/
+*.tmp
+*.bak
+*.swp
+*~
+
+# Operating System and Editor Files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+[Dd]esktop.ini
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace

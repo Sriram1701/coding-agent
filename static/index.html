@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI CODING HUB - Local Automation System</title>
+  <link rel="stylesheet" href="/static/css/dashboard.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2306b6d4'><polygon points='12 2 2 7 12 12 22 7 12 2'/><polyline points='2 17 12 22 22 17'/><polyline points='2 12 12 17 22 12'/></svg>">
+</head>
+<body>
+  <div class="app-container">
+
+    <!-- Toast Notification Container -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- ====================================================================
+         Sidebar Navigation
+         ==================================================================== -->
+    <aside id="sidebar" class="sidebar">
+      <div class="sidebar-header">
+        <a href="#" class="brand">
+          <div class="brand-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+              <polyline points="2 17 12 22 22 17"></polyline>
+              <polyline points="2 12 12 17 22 12"></polyline>
+            </svg>
+          </div>
+          <div class="brand-info">
+            <span class="brand-title">AI CODING HUB</span>
+            <span class="brand-badge">Local Automation</span>
+          </div>
+        </a>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section-title">Navigation</div>
+
+        <a class="nav-item active" data-view="overview" href="#overview">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <rect x="3" y="3" width="7" height="7"></rect>
+            <rect x="14" y="3" width="7" height="7"></rect>
+            <rect x="14" y="14" width="7" height="7"></rect>
+            <rect x="3" y="14" width="7" height="7"></rect>
+          </svg>
+          <span class="nav-label">Overview</span>
+        </a>
+
+        <a class="nav-item" data-view="chat" href="#chat">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+          </svg>
+          <span class="nav-label">AI Chat</span>
+          <span class="nav-badge">Interactive</span>
+        </a>
+
+        <a class="nav-item" data-view="antigravity" href="#antigravity">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+          </svg>
+          <span class="nav-label">Antigravity Agent</span>
+          <span class="nav-badge" style="background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3);">Sole Active Agent</span>
+        </a>
+
+        <a class="nav-item" data-view="vscode" href="#vscode">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <polyline points="16 18 22 12 16 6"></polyline>
+            <polyline points="8 6 2 12 8 18"></polyline>
+          </svg>
+          <span class="nav-label">VS Code Agent</span>
+          <span class="nav-badge" style="background: rgba(148, 163, 184, 0.15); color: #94a3b8; border: 1px solid rgba(148, 163, 184, 0.25);">Disabled</span>
+        </a>
+
+        <div class="nav-section-title" style="margin-top: 8px;">Workspace &amp; Ops</div>
+
+        <a class="nav-item" data-view="projects" href="#projects">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+          </svg>
+          <span class="nav-label">Project Manager</span>
+        </a>
+
+        <a class="nav-item" data-view="automation" href="#automation">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+          <span class="nav-label">Task Automation</span>
+        </a>
+
+        <a class="nav-item" data-view="monitor" href="#monitor">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <line x1="18" y1="20" x2="18" y2="10"></line>
+            <line x1="12" y1="20" x2="12" y2="4"></line>
+            <line x1="6" y1="20" x2="6" y2="14"></line>
+          </svg>
+          <span class="nav-label">System Monitor</span>
+        </a>
+
+        <a class="nav-item" data-view="settings" href="#settings">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+          <span class="nav-label">Settings</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="system-status-pill">
+          <div class="status-left">
+            <span id="footerPulseDot" class="pulse-dot"></span>
+            <span id="footerStatusText" style="color: var(--text-secondary); font-weight: 500;">FastAPI: Connecting...</span>
+          </div>
+          <span style="font-family: var(--font-mono); color: var(--accent-cyan);">:8000</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ====================================================================
+         Main Wrapper
+         ==================================================================== -->
+    <div class="main-wrapper">
+
+      <!-- Topbar Header -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <button id="mobileToggle" class="mobile-menu-toggle" aria-label="Toggle menu">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+          </button>
+          <div class="breadcrumbs">
+            <span class="breadcrumb-root">AI CODING HUB</span>
+            <span class="breadcrumb-separator">/</span>
+            <span id="breadcrumbActive" class="breadcrumb-active">Overview</span>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <div id="topStatusChip" class="stat-chip stat-chip-accent">
+            <span class="pulse-dot"></span> ONLINE
+          </div>
+          <div id="topLatencyChip" class="stat-chip">
+            <span>LATENCY:</span> --
+          </div>
+          <div class="stat-chip">
+            <span>UPTIME:</span> <span id="uptimeDisplay" style="color: var(--text-primary); margin-left: 4px;">00:00:00</span>
+          </div>
+
+          <div class="topbar-actions">
+            <button id="btnCheckHealth" class="btn-icon" title="Ping /health endpoint">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="23 4 23 10 17 10"></polyline>
+                <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+              </svg>
+            </button>
+            <a href="/docs" target="_blank" class="btn-icon" title="FastAPI Interactive Swagger Docs">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+              </svg>
+            </a>
+          </div>
+        </div>
+      </header>
+
+      <!-- Content Area -->
+      <main class="content-area">
+
+        <!-- ================================================================
+             VIEW 1: OVERVIEW (MAIN DASHBOARD)
+             ================================================================ -->
+        <section id="view-overview" class="dashboard-view active-view">
+
+          <!-- Hero Branding Banner -->
+          <div class="hero-banner">
+            <div class="hero-content">
+              <div class="hero-title">
+                AI CODING HUB
+                <span class="hero-tag">v1.0.0</span>
+              </div>
+              <p class="hero-description">
+                Local AI Coding Automation System orchestrating local agents, automated developer workflows, 
+                and code generation pipelines directly on your machine.
+              </p>
+              <div class="hero-meta">
+                <div class="meta-pill">Engine: <span>FastAPI 0.162+</span></div>
+                <div class="meta-pill">Environment: <span>Python 3.12 (.venv)</span></div>
+                <div class="meta-pill">Host: <span>127.0.0.1:8000</span></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Status Cards Grid (4 Key Status Cards) -->
+          <div class="status-grid">
+
+            <!-- Card 1: Backend Connection Status -->
+            <div class="status-card">
+              <div class="card-top">
+                <div class="card-header-left">
+                  <div class="card-icon-box icon-cyan">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
+                      <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
+                      <line x1="6" y1="6" x2="6.01" y2="6"></line>
+                      <line x1="6" y1="18" x2="6.01" y2="18"></line>
+                    </svg>
+                  </div>
+                  <div class="card-titles">
+                    <span class="card-label">Backend Connection</span>
+                    <span class="card-sub">FastAPI Engine</span>
+                  </div>
+                </div>
+                <span id="backendStatusBadge" class="status-badge badge-online">
+                  <span class="pulse-dot"></span> Checking
+                </span>
+              </div>
+              <div id="backendStatusVal" class="card-main-val">Connecting...</div>
+              <div class="card-details-list">
+                <div class="card-detail-row">
+                  <span class="card-detail-key">Endpoint</span>
+                  <span class="card-detail-value">GET /health</span>
+                </div>
+                <div class="card-detail-row">
+                  <span class="card-detail-key">Latency</span>
+                  <span id="backendLatencyVal" class="card-detail-value">--</span>
+                </div>
+                <div class="card-detail-row">
+                  <span class="card-detail-key">Payload</span>
+                  <span id="backendResponseVal" class="card-detail-value" style="font-size: 10px;">{"status":"healthy"}</span>
+                </div>
+                <div class="card-detail-row">
+                  <span class="card-detail-key">Last Check</span>
+                  <span id="backendLastCheckVal" class="card-detail-value">--</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card 2: Antigravity Agent Status -->
+            <div class="status-card">
+              <div class="card-top">
+                <div class="card-header-left">
+                  <div class="card-icon-box icon-purple">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                    </svg>
+                  </div>
+                  <div class="card-titles">
+                    <span class="card-label">Antigravity Agent</span>
+                    <span class="card-sub">AI Automation Core</span>
+                  </div>
+                </div>
+                <span class="status-badge badge-standby">Standby</span>
+              </div>
+              <div class="card-main-val">Ready for Bridge</div>
+              <div class="card-details-list">
+                <div class="card-detail-row">
+                  <span class="card-detail-key">State</span>
+                  <span class="card-detail-value" style="color: var(--accent-amber);">Configured / Standby</span>
+                </div>
+                <div class="card-detail-row">
+                  <span class="card-detail-key">Protocol</span>
+                  <span class="card-detail-value">Agent Protocol v2</span>
+                </div>
+                <div class="card-detail-row">
+                  <span class="card-detail-key">Capability</span>
+                  <span class="card-detail-value">Code, Edit, Tools</span>
+                </div>
+                <div class="card-detail-row">
+                  <span class="card-detail-key">Integration</span>
+                  <span class="card-detail-value" style="color: var(--text-muted);">Pending Live Pairing</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card 3: VS Code Agent Status -->
+            <div class="status-card">
+              <div class="card-top">
+                <div class="card-header-left">
+                  <div class="card-icon-box icon-indigo">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="16 18 22 12 16 6"></polyline>
+                      <polyline points="8 6 2 12 8 18"></polyline>
+                    </svg>
+                  </div>
+                  <div class="card-titles">
+                    <span class="card-label">VS Code Agent</span>
+                    <span class="card-sub">IDE Companion</span>
+                  </div>
+                </div>
+                <span class="status-badge badge-standby">Standby</span>
+              </div>
+              <div class="card-main-val">Extension Ready</div>
+              <div class="card-details-list">
+                <div class="card-detail-row">
+                  <span class="card-detail-key">State</span>
+                  <span class="card-detail-value" style="color: var(--accent-amber);">Standby / Ready</span>
+                </div>
+                <div class="card-detail-row">
+                  <span class="card-detail-key">IPC Channel</span>
+                  <span class="card-detail-value">Local Socket / HTTP</span>
+                </div>
+                <div class="card-detail-row">
+                  <span class="card-detail-key">LSP Bridge</span>
+                  <span class="card-detail-value">Port 8000 Listener</span>
+                </div>
+                <div class="card-detail-row">
+                  <span class="card-detail-key">Integration</span>
+                  <span class="card-detail-value" style="color: var(--text-muted);">Pending Extension Link</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card 4: Active Projects Status -->
+            <div class="status-card">
+              <div class="card-top">
+                <div class="card-header-left">
+                  <div class="card-icon-box icon-emerald">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                  </div>
+                  <div class="card-titles">
+                    <span class="card-label">Active Project</span>
+                    <span class="card-sub">Local Workspace</span>
+                  </div>
+                </div>
+                <span class="status-badge badge-online">Active</span>
+              </div>
+              <div class="card-main-val">AI-CODING-HUB</div>
+              <div class="card-details-list">
+                <div class="card-detail-row">
+                  <span class="card-detail-key">Framework</span>
+                  <span class="card-detail-value">FastAPI + Uvicorn</span>
+                </div>
+                <div class="card-detail-row">
+                  <span class="card-detail-key">Environment</span>
+                  <span class="card-detail-value">.venv Active</span>
+                </div>
+                <div class="card-detail-row">
+                  <span class="card-detail-key">Endpoints</span>
+                  <span class="card-detail-value">/, /health, /dashboard</span>
+                </div>
+                <div class="card-detail-row">
+                  <span class="card-detail-key">Status</span>
+                  <span class="card-detail-value" style="color: var(--accent-emerald);">Synchronized</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Quick Actions Bar -->
+          <div class="section-title-wrap">
+            <div class="section-title">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" stroke-width="2">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+              </svg>
+              Quick Actions
+            </div>
+          </div>
+
+          <div class="quick-actions-bar">
+            <button id="btnCheckHealthAction" onclick="document.getElementById('btnCheckHealth').click()" class="action-btn action-btn-primary">
+              <svg class="action-btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+              </svg>
+              <div>
+                <div>Check Health</div>
+                <small style="color: var(--text-muted); font-size: 10.5px;">Ping /health endpoint</small>
+              </div>
+            </button>
+
+            <button id="btnOpenChat" class="action-btn">
+              <svg class="action-btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+              </svg>
+              <div>
+                <div>Launch AI Chat</div>
+                <small style="color: var(--text-muted); font-size: 10.5px;">Interactive coding prompt</small>
+              </div>
+            </button>
+
+            <button id="btnOpenAntigravity" class="action-btn">
+              <svg class="action-btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
+              </svg>
+              <div>
+                <div>Antigravity Agent</div>
+                <small style="color: var(--text-muted); font-size: 10.5px;">Inspect agent configs</small>
+              </div>
+            </button>
+
+            <button id="btnScanWorkspace" class="action-btn">
+              <svg class="action-btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="4 17 10 11 4 5"></polyline>
+                <line x1="12" y1="19" x2="20" y2="19"></line>
+              </svg>
+              <div>
+                <div>Scan Workspace</div>
+                <small style="color: var(--text-muted); font-size: 10.5px;">Verify local files</small>
+              </div>
+            </button>
+
+            <button id="btnRunTest" class="action-btn">
+              <svg class="action-btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+              </svg>
+              <div>
+                <div>Verify Endpoints</div>
+                <small style="color: var(--text-muted); font-size: 10.5px;">Execute live GET tests</small>
+              </div>
+            </button>
+          </div>
+
+          <!-- Split Section: Active Projects & Recent Activity -->
+          <div class="split-grid">
+
+            <!-- Active Projects Panel -->
+            <div class="panel-card">
+              <div class="panel-header">
+                <div class="panel-title">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" stroke-width="2">
+                    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                  </svg>
+                  Active Workspace Project
+                </div>
+                <span class="status-badge badge-online">1 Local Project</span>
+              </div>
+
+              <div class="project-card">
+                <div class="project-header">
+                  <div class="project-name">
+                    <span>AI-CODING-HUB</span>
+                    <span class="hero-tag" style="font-size: 10px;">Primary Hub</span>
+                  </div>
+                  <span class="status-badge badge-info">FastAPI</span>
+                </div>
+
+                <div class="project-path">
+                  Path: C:\Users\lovel\Desktop\AI-CODING-HUB
+                </div>
+
+                <div class="tag-list">
+                  <span class="tag">Python 3.12+</span>
+                  <span class="tag">FastAPI</span>
+                  <span class="tag">Uvicorn</span>
+                  <span class="tag">Starlette</span>
+                  <span class="tag">Local Server</span>
+                </div>
+
+                <div class="project-endpoints">
+                  <div class="endpoint-chip">
+                    <span><strong class="method-get">GET</strong> /</span>
+                    <span style="color: var(--text-muted);">{"status": "online"}</span>
+                  </div>
+                  <div class="endpoint-chip">
+                    <span><strong class="method-get">GET</strong> /health</span>
+                    <span style="color: var(--accent-emerald);">{"status": "healthy"}</span>
+                  </div>
+                  <div class="endpoint-chip">
+                    <span><strong class="method-get">GET</strong> /dashboard</span>
+                    <span style="color: var(--accent-cyan);">HTML Developer Console</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Integration Readiness Card -->
+              <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 14px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                  <span style="font-size: 12px; font-weight: 600; color: var(--text-secondary);">Agent Integration Pipeline</span>
+                  <span style="font-size: 11px; color: var(--accent-amber); font-weight: 600;">Standby Mode</span>
+                </div>
+                <p style="font-size: 11.5px; color: var(--text-muted); line-height: 1.4;">
+                  Antigravity Agent &amp; VS Code Agent connectors are structurally defined and ready. Live IPC/API link will synchronize when agent runtimes are initialized.
+                </p>
+              </div>
+            </div>
+
+            <!-- Recent Activity Feed Panel -->
+            <div class="panel-card">
+              <div class="panel-header">
+                <div class="panel-title">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" stroke-width="2">
+                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                  </svg>
+                  Recent System Activity
+                </div>
+                <button onclick="document.getElementById('activityList').innerHTML='';" class="action-btn" style="padding: 4px 8px; font-size: 11px;">
+                  Clear Log
+                </button>
+              </div>
+
+              <div id="activityList" class="activity-list">
+                <!-- Activity items populated dynamically via JS -->
+              </div>
+            </div>
+
+          </div>
+
+        </section>
+
+
+        <!-- ================================================================
+             VIEW 2: AI CHAT
+             ================================================================ -->
+        <section id="view-chat" class="dashboard-view">
+          <div class="view-header">
+            <h2 class="view-heading">AI Chat Interface</h2>
+            <p class="view-sub">Local prompt orchestrator for automated coding assistance and task queries.</p>
+          </div>
+
+          <div class="chat-container">
+            <div class="chat-header">
+              <div class="chat-status-indicator">
+                <span class="pulse-dot"></span>
+                <span>Agent Status: <strong>Standby (Ready to receive prompts)</strong></span>
+              </div>
+              <button id="btnClearChat" class="action-btn" style="padding: 5px 10px; font-size: 11px;">Clear History</button>
+            </div>
+
+            <div id="chatMessages" class="chat-messages">
+              <div class="chat-bubble bubble-assistant">
+                Hello! I am the <strong>AI CODING HUB</strong> assistant.
+                I can assist you with understanding your local automation pipelines, checking backend status, or inspecting files. 
+                What would you like to explore?
+              </div>
+            </div>
+
+            <div class="chat-input-bar">
+              <input id="chatInput" type="text" class="chat-input" placeholder="Type a message or automation command (e.g. 'check health', 'antigravity status', 'help')...">
+              <button id="btnSendMessage" class="btn-send">
+                <span>Send</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="22" y1="2" x2="11" y2="13"></line>
+                  <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </section>
+
+
+        <!-- ================================================================
+             VIEW 3: ANTIGRAVITY AGENT (PHASE 1: APPROVAL-BASED CLI BRIDGE)
+             ================================================================ -->
+        <section id="view-antigravity" class="dashboard-view">
+          <div class="view-header">
+            <h2 class="view-heading">Antigravity CLI Agent Bridge</h2>
+            <p class="view-sub">Approval-governed execution environment linking AI CODING HUB with the local Antigravity CLI (v1.5.8).</p>
+          </div>
+
+          <!-- Connection & Security Status Banner -->
+          <div class="agent-banner" style="margin-bottom: 20px;">
+            <div>
+              <div style="font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 6px; display: flex; align-items: center; gap: 10px;">
+                <span>Antigravity ACP Engine</span>
+                <span class="hero-tag" style="background: rgba(16, 185, 129, 0.15); color: var(--accent-emerald); border-color: rgba(16, 185, 129, 0.3);">v1.5.9 Protocol</span>
+              </div>
+              <p style="font-size: 13px; color: var(--text-secondary); max-width: 680px; line-height: 1.5;">
+                Connected to <code style="color: var(--accent-cyan); font-family: var(--font-mono);">agy.exe acp --stdio</code>. 
+                <strong>Mandatory Human Approval Active:</strong> Mode is locked to <code style="color: var(--accent-amber); font-family: var(--font-mono);">default</code>. Every sensitive file modification and command execution pauses for explicit user authorization. Default behavior is <strong>DENY</strong>.
+              </p>
+            </div>
+            <div style="text-align: right;">
+              <span id="agentBridgeStatusBadge" class="status-badge badge-online" style="font-size: 12px; padding: 6px 14px;">
+                <span class="pulse-dot"></span> ACP Connected
+              </span>
+              <div style="font-size: 11px; color: var(--text-muted); margin-top: 6px;">Safety Gate: Per-Action Human Approval</div>
+            </div>
+          </div>
+
+          <!-- PROMINENT SENSITIVE ACTION APPROVAL PANEL (MANDATORY HUMAN APPROVAL) -->
+          <div id="actionApprovalPanel" style="display: none; background: rgba(245, 158, 11, 0.08); border: 2px solid var(--accent-amber); border-radius: var(--radius-lg); padding: 22px; margin-bottom: 22px; box-shadow: 0 0 25px rgba(245, 158, 11, 0.15);">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <span class="pulse-dot status-dot-amber"></span>
+                <span style="font-size: 15px; font-weight: 700; color: #fff; letter-spacing: 0.3px;">MANDATORY ACTION APPROVAL REQUIRED</span>
+              </div>
+              <span id="actionApprovalTaskId" class="approval-id" style="font-size: 12px;">task_xxx</span>
+            </div>
+
+            <p style="font-size: 13px; color: #fde68a; margin-bottom: 14px; line-height: 1.5;">
+              The Antigravity Agent has <strong>paused execution</strong> and requires your explicit authorization before performing the following operation:
+            </p>
+
+            <div style="background-color: var(--bg-input); border: 1px solid var(--border-medium); border-radius: var(--radius-md); padding: 14px; margin-bottom: 16px;">
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                <span id="actionTitle" style="font-size: 13.5px; font-weight: 700; color: var(--accent-cyan);">Action: Edit File</span>
+                <span id="actionKindBadge" class="status-badge badge-pending_approval" style="font-size: 11px;">edit</span>
+              </div>
+              <pre id="actionDetailsBox" class="code-box" style="margin-top: 6px; max-height: 180px; overflow-y: auto; color: #f1f5f9;"></pre>
+            </div>
+
+            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+              <div style="font-size: 11.5px; color: var(--text-muted);">
+                Default policy: <strong>DENY</strong>. If rejected or cancelled, this operation will be aborted.
+              </div>
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <button id="btnApproveAction" class="btn-approve" style="padding: 10px 20px; font-size: 13px;">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  Approve Once
+                </button>
+                <button id="btnRejectAction" class="btn-reject" style="padding: 10px 18px; font-size: 13px;">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                  Reject Once
+                </button>
+                <button id="btnCancelActionTask" class="action-btn" style="padding: 10px 14px; font-size: 12px; color: var(--text-muted);">
+                  Cancel Task
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Submit Coding Task Form -->
+          <div class="task-form-card">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+              <div class="panel-title">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" stroke-width="2">
+                  <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                  <polyline points="2 17 12 22 22 17"></polyline>
+                  <polyline points="2 12 12 17 22 12"></polyline>
+                </svg>
+                Submit Coding Task for Approval
+              </div>
+              <span class="status-badge badge-pending_approval" style="font-size: 11px;">Requires Approval</span>
+            </div>
+
+            <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px;">Target Workspace (Strictly Enforced):</div>
+            <div style="background-color: var(--bg-input); border: 1px solid var(--border-subtle); padding: 8px 12px; border-radius: var(--radius-sm); font-family: var(--font-mono); font-size: 12px; color: var(--accent-cyan); margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between;">
+              <span>📁 C:\Users\lovel\Desktop\AI-CODING-HUB</span>
+              <span style="color: var(--accent-emerald); font-size: 11px;">✔ Locked &amp; Validated</span>
+            </div>
+
+            <label for="taskPromptInput" style="font-size: 12.5px; font-weight: 600; color: var(--text-primary);">Coding Task Prompt:</label>
+            <textarea id="taskPromptInput" class="task-textarea" placeholder="Describe the coding task (e.g., 'Inspect the existing FastAPI routes and propose test improvements')..."></textarea>
+
+            <div style="display: flex; justify-content: flex-end; gap: 10px;">
+              <button id="btnSubmitTask" class="action-btn action-btn-primary" style="padding: 10px 20px; font-size: 13px;">
+                <svg class="action-btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                  <line x1="12" y1="18" x2="12" y2="12"></line>
+                  <line x1="9" y1="15" x2="15" y2="15"></line>
+                </svg>
+                <span>Submit Task (Hold for Approval)</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Pending Approval Panel -->
+          <div class="panel-card" style="margin-bottom: 22px;">
+            <div class="panel-header">
+              <div class="panel-title">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent-amber)" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="12" y1="8" x2="12" y2="12"></line>
+                  <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+                Tasks Awaiting User Approval
+              </div>
+              <span id="pendingCountBadge" class="status-badge badge-pending_approval">0 Pending</span>
+            </div>
+
+            <div id="pendingTasksContainer" class="approval-list">
+              <div style="font-size: 12.5px; color: var(--text-muted); padding: 14px; text-align: center;">
+                No tasks currently awaiting approval. Submit a task above to preview it here.
+              </div>
+            </div>
+          </div>
+
+          <!-- Task History & Execution Status -->
+          <div class="panel-card">
+            <div class="panel-header">
+              <div class="panel-title">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" stroke-width="2">
+                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                </svg>
+                Task Execution History &amp; Logs
+              </div>
+              <button id="btnRefreshTasks" class="action-btn" style="padding: 4px 10px; font-size: 11px;">
+                Refresh Tasks
+              </button>
+            </div>
+
+            <div id="taskHistoryContainer" style="display: flex; flex-direction: column; gap: 10px;">
+              <!-- Populated dynamically via JS -->
+            </div>
+
+            <!-- Active / Selected Task Log Output Viewer -->
+            <div id="taskLogViewer" style="display: none; margin-top: 20px;">
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                <span id="logViewerTitle" style="font-size: 13px; font-weight: 600; color: #fff;">Execution Log Output</span>
+                <button id="btnCloseLogViewer" class="action-btn" style="padding: 3px 8px; font-size: 10.5px;">Close Log</button>
+              </div>
+              <pre id="taskLogOutput" class="log-drawer"></pre>
+            </div>
+          </div>
+        </section>
+
+
+        <!-- ================================================================
+             VIEW 4: VS CODE AGENT
+             ================================================================ -->
+        <section id="view-vscode" class="dashboard-view">
+          <div class="view-header">
+            <h2 class="view-heading">VS Code Agent (Disabled)</h2>
+            <p class="view-sub">AI CODING HUB is strictly configured for Antigravity ACP as the sole active agent.</p>
+          </div>
+
+          <div class="agent-banner" style="border-left: 4px solid #94a3b8;">
+            <div>
+              <div style="font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 4px;">VS Code Bridge Status: Disabled</div>
+              <p style="font-size: 13px; color: var(--text-secondary); max-width: 600px;">
+                VS Code agent bridge and extension execution are disabled. All automated coding tasks run exclusively through the Antigravity ACP stdio server with strict human approval.
+              </p>
+            </div>
+            <div style="text-align: right;">
+              <span class="status-badge" style="background: rgba(148, 163, 184, 0.15); color: #94a3b8; border: 1px solid rgba(148, 163, 184, 0.3); font-size: 13px; padding: 6px 14px;">Disabled (Antigravity Only)</span>
+              <div style="font-size: 11px; color: var(--text-muted); margin-top: 6px;">Active Agent: Antigravity ACP</div>
+            </div>
+          </div>
+
+          <div class="split-grid">
+            <div class="panel-card">
+              <div class="panel-title" style="margin-bottom: 12px;">Configuration &amp; Policy</div>
+              <div class="card-details-list" style="border:none; padding:0; margin:0;">
+                <div class="card-detail-row"><span class="card-detail-key">Active Agent:</span><span class="card-detail-value" style="color: var(--accent-cyan); font-weight: 600;">Antigravity ACP (agy.exe)</span></div>
+                <div class="card-detail-row"><span class="card-detail-key">VS Code Bridge:</span><span class="card-detail-value" style="color: #94a3b8;">Disabled</span></div>
+                <div class="card-detail-row"><span class="card-detail-key">Target Workspace:</span><span class="card-detail-value">AI-CODING-HUB</span></div>
+                <div class="card-detail-row"><span class="card-detail-key">Security Policy:</span><span class="card-detail-value" style="color: var(--accent-emerald);">Strict Human-in-the-Loop</span></div>
+              </div>
+            </div>
+
+            <div class="panel-card">
+              <div class="panel-title" style="margin-bottom: 12px;">Active Agent Notice</div>
+              <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.6;">
+                AI CODING HUB is configured exclusively for <strong>Antigravity ACP</strong>.
+                Every sensitive action (file edits, creations, deletions, and terminal executions)
+                must be explicitly reviewed and authorized through this dashboard before execution.
+              </p>
+            </div>
+          </div>
+        </section>
+
+
+        <!-- ================================================================
+             VIEW 5: PROJECT MANAGER
+             ================================================================ -->
+        <section id="view-projects" class="dashboard-view">
+          <div class="view-header">
+            <h2 class="view-heading">Project Manager</h2>
+            <p class="view-sub">Inspect local project structure, dependencies, and environment status.</p>
+          </div>
+
+          <div class="panel-card" style="margin-bottom: 20px;">
+            <div class="panel-title" style="margin-bottom: 16px;">Workspace File Tree</div>
+            <div style="background-color: var(--bg-input); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 16px; font-family: var(--font-mono); font-size: 13px; line-height: 1.8;">
+              <div style="color: var(--accent-cyan); font-weight: 700;">📁 C:\Users\lovel\Desktop\AI-CODING-HUB</div>
+              <div style="padding-left: 20px;">├── 📁 .venv <span style="color: var(--text-muted); font-size: 11px;">(Python Virtual Environment)</span></div>
+              <div style="padding-left: 20px;">├── 📁 static <span style="color: var(--text-muted); font-size: 11px;">(Dashboard Assets)</span></div>
+              <div style="padding-left: 40px;">├── 📁 css <span style="color: var(--text-muted); font-size: 11px;">(dashboard.css)</span></div>
+              <div style="padding-left: 40px;">├── 📁 js <span style="color: var(--text-muted); font-size: 11px;">(dashboard.js)</span></div>
+              <div style="padding-left: 40px;">└── 📄 index.html <span style="color: var(--text-muted); font-size: 11px;">(Dashboard View)</span></div>
+              <div style="padding-left: 20px;">└── 📄 main.py <span style="color: var(--accent-emerald); font-weight:600;">(FastAPI Core Backend)</span></div>
+            </div>
+          </div>
+        </section>
+
+
+        <!-- ================================================================
+             VIEW 6: TASK AUTOMATION
+             ================================================================ -->
+        <section id="view-automation" class="dashboard-view">
+          <div class="view-header">
+            <h2 class="view-heading">Task Automation Hub</h2>
+            <p class="view-sub">Trigger automated workflows, diagnostics, and local code tasks with one click.</p>
+          </div>
+
+          <div class="task-list">
+            <div class="task-item">
+              <div class="task-info-main">
+                <div class="task-icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="23 4 23 10 17 10"></polyline>
+                    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                  </svg>
+                </div>
+                <div>
+                  <div class="task-title">Automated Health &amp; Endpoint Test</div>
+                  <div class="task-desc">Pings / and /health endpoints, validates HTTP 200 responses, and logs metrics.</div>
+                </div>
+              </div>
+              <button class="btn-task-run" data-task="Health &amp; Endpoint Test">Run Task</button>
+            </div>
+
+            <div class="task-item">
+              <div class="task-info-main">
+                <div class="task-icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="4 17 10 11 4 5"></polyline>
+                    <line x1="12" y1="19" x2="20" y2="19"></line>
+                  </svg>
+                </div>
+                <div>
+                  <div class="task-title">Workspace Directory Inventory</div>
+                  <div class="task-desc">Catalogs all files, packages, and static assets in the local workspace directory.</div>
+                </div>
+              </div>
+              <button class="btn-task-run" data-task="Workspace Inventory">Run Task</button>
+            </div>
+
+            <div class="task-item">
+              <div class="task-info-main">
+                <div class="task-icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                  </svg>
+                </div>
+                <div>
+                  <div class="task-title">Dependency &amp; Environment Diagnostics</div>
+                  <div class="task-desc">Checks virtual environment packages, versions, and security configurations.</div>
+                </div>
+              </div>
+              <button class="btn-task-run" data-task="Dependency Diagnostics">Run Task</button>
+            </div>
+          </div>
+        </section>
+
+
+        <!-- ================================================================
+             VIEW 7: SYSTEM MONITOR
+             ================================================================ -->
+        <section id="view-monitor" class="dashboard-view">
+          <div class="view-header">
+            <h2 class="view-heading">System Telemetry &amp; Monitor</h2>
+            <p class="view-sub">Real-time performance diagnostics, latency trends, and server telemetry.</p>
+          </div>
+
+          <div class="status-grid" style="margin-bottom: 20px;">
+            <div class="status-card">
+              <div class="card-titles">
+                <span class="card-label">Requests Monitored</span>
+                <span class="card-sub">Session queries</span>
+              </div>
+              <div id="monitorReqCount" class="card-main-val" style="margin-top: 8px;">0</div>
+            </div>
+
+            <div class="status-card">
+              <div class="card-titles">
+                <span class="card-label">Average Latency</span>
+                <span class="card-sub">Last 10 health checks</span>
+              </div>
+              <div id="monitorAvgLatency" class="card-main-val" style="margin-top: 8px; color: var(--accent-cyan);">-- ms</div>
+            </div>
+
+            <div class="status-card">
+              <div class="card-titles">
+                <span class="card-label">Continuous Uptime</span>
+                <span class="card-sub">Active session timer</span>
+              </div>
+              <div id="monitorUptimeVal" class="card-main-val" style="margin-top: 8px; color: var(--accent-emerald);">00:00:00</div>
+            </div>
+          </div>
+
+          <div class="panel-card">
+            <div class="panel-title" style="margin-bottom: 16px;">Live Health Ping Latency Graph</div>
+            <div id="latencyBarsWrap" style="display: flex; align-items: flex-end; gap: 8px; height: 120px; padding: 10px 0; border-bottom: 1px solid var(--border-subtle);">
+              <!-- Rendered via JS -->
+            </div>
+            <div style="font-size: 11px; color: var(--text-muted); margin-top: 8px; text-align: right;">
+              Auto-updating via /health polling
+            </div>
+          </div>
+        </section>
+
+
+        <!-- ================================================================
+             VIEW 8: SETTINGS
+             ================================================================ -->
+        <section id="view-settings" class="dashboard-view">
+          <div class="view-header">
+            <h2 class="view-heading">System Settings</h2>
+            <p class="view-sub">Manage dashboard polling, local network configurations, and agent parameters.</p>
+          </div>
+
+          <div class="settings-grid">
+            <div class="settings-group">
+              <div class="settings-group-title">Health Check &amp; Polling</div>
+              
+              <div class="form-row">
+                <div class="form-label-wrap">
+                  <span class="form-label">Auto-polling /health</span>
+                  <span class="form-sub">Automatically ping the backend to verify connection status</span>
+                </div>
+                <input id="togglePolling" type="checkbox" checked style="accent-color: var(--accent-cyan); width: 18px; height: 18px; cursor: pointer;">
+              </div>
+
+              <div class="form-row">
+                <div class="form-label-wrap">
+                  <span class="form-label">Polling Interval (seconds)</span>
+                  <span class="form-sub">Frequency of backend health probes</span>
+                </div>
+                <input id="pollingIntervalInput" type="number" min="1" max="60" value="5" class="form-control-input" style="width: 80px;">
+              </div>
+            </div>
+
+            <div class="settings-group">
+              <div class="settings-group-title">Agent Bridge Configuration</div>
+
+              <div class="form-row">
+                <div class="form-label-wrap">
+                  <span class="form-label">Antigravity Local Port</span>
+                  <span class="form-sub">Local port used for agent tool communication</span>
+                </div>
+                <input type="text" value="8000" disabled class="form-control-input" style="width: 90px; color: var(--text-muted);">
+              </div>
+
+              <div class="form-row">
+                <div class="form-label-wrap">
+                  <span class="form-label">Workspace Binding</span>
+                  <span class="form-sub">Active project path</span>
+                </div>
+                <span style="font-family: var(--font-mono); font-size: 11.5px; color: var(--accent-cyan);">C:\Users\lovel\Desktop\AI-CODING-HUB</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- Dashboard JavaScript -->
+  <script src="/static/js/dashboard.js"></script>
+</body>
+</html>
